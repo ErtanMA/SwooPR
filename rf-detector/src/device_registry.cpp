@@ -1,9 +1,18 @@
 #include "device_registry.h"
+#include "oui_table.h"
 #include <Arduino.h>
 #include <string.h>
+#include <stdio.h>
 
 static DetectedDevice s_devices[MAX_DEVICES];
 static uint8_t        s_count = 0;
+
+// Locally administered bit (bit 1 of first octet) is set on privacy/randomized MACs.
+static bool mac_is_random(const char* mac) {
+    unsigned int first = 0;
+    sscanf(mac, "%x", &first);
+    return (first & 0x02) != 0;
+}
 
 void registry_init() {
     s_count = 0;
@@ -50,8 +59,15 @@ void registry_update(const ScanResult* results, uint8_t count, uint32_t now_ms) 
             d.first_seen_ms = now_ms;
             d.last_seen_ms  = now_ms;
             d.times_seen    = 1;
+            d.random_mac    = mac_is_random(r.mac);
+            d.camera_oui    = !d.random_mac && oui_is_camera(r.mac);
             s_count++;
-            Serial.printf("[REGISTRY] add %s  %d dBm\n", d.mac, (int)d.rssi);
+            if (d.camera_oui)
+                Serial.printf("[REGISTRY] add %s  %d dBm  [camera:%s]\n",
+                              d.mac, (int)d.rssi, oui_vendor(r.mac));
+            else
+                Serial.printf("[REGISTRY] add %s  %d dBm%s\n",
+                              d.mac, (int)d.rssi, d.random_mac ? "  [random]" : "");
         }
     }
 }

@@ -18,6 +18,8 @@ struct DetectedDevice {
     uint32_t       last_seen_ms;
     uint16_t       times_seen;
     bool           whitelisted;
+    bool           random_mac;   // locally administered bit set — likely a rotating privacy MAC
+    bool           camera_oui;   // MAC prefix matched a known surveillance manufacturer
     uint8_t        threat_score;
 };
 

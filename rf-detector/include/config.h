@@ -20,6 +20,7 @@ constexpr uint8_t THREAT_SCORE_MEDIUM    = 20;
 constexpr uint8_t THREAT_SCORE_SEEN_MULT = 1;   // points per times_seen, up to THREAT_SEEN_CAP
 constexpr uint8_t THREAT_SEEN_CAP        = 20;
 constexpr uint8_t THREAT_SCORE_HIDDEN    = 30;  // bonus for devices with no SSID/name
+constexpr uint8_t THREAT_SCORE_CAMERA_OUI = 40; // MAC prefix matched a known camera manufacturer
 
 // Guard mode
 constexpr int8_t   GUARD_STRONGER_DELTA  = 10;    // dBm increase that triggers STRONGER_SIGNAL

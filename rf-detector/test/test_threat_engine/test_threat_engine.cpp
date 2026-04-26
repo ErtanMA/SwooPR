@@ -77,6 +77,28 @@ void test_times_seen_contributes_to_score() {
     TEST_ASSERT_GREATER_THAN(few.threat_score, many.threat_score);
 }
 
+void test_camera_oui_scores_higher() {
+    DetectedDevice plain  = make_device(-70, false, 1, false);
+    DetectedDevice camera = make_device(-70, false, 1, false);
+    camera.camera_oui = true;
+
+    threat_score_all(&plain,  1);
+    threat_score_all(&camera, 1);
+
+    TEST_ASSERT_GREATER_THAN(plain.threat_score, camera.threat_score);
+}
+
+void test_random_mac_ignores_times_seen() {
+    DetectedDevice fixed  = make_device(-85, false, 20, false);
+    DetectedDevice random = make_device(-85, false, 20, false);
+    random.random_mac = true;
+
+    threat_score_all(&fixed,  1);
+    threat_score_all(&random, 1);
+
+    TEST_ASSERT_GREATER_THAN(random.threat_score, fixed.threat_score);
+}
+
 int main(int argc, char**) {
     UNITY_BEGIN();
     RUN_TEST(test_whitelisted_scores_zero);
@@ -85,5 +107,7 @@ int main(int argc, char**) {
     RUN_TEST(test_score_capped_at_max);
     RUN_TEST(test_sort_descending);
     RUN_TEST(test_times_seen_contributes_to_score);
+    RUN_TEST(test_camera_oui_scores_higher);
+    RUN_TEST(test_random_mac_ignores_times_seen);
     return UNITY_END();
 }

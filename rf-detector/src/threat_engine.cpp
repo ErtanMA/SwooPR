@@ -12,13 +12,20 @@ static uint8_t score_device(const DetectedDevice& d) {
     else if (d.smoothed_rssi > RSSI_MEDIUM_THRESHOLD)
         score += THREAT_SCORE_MEDIUM;
 
-    uint8_t seen = (d.times_seen < THREAT_SEEN_CAP)
-                   ? (uint8_t)d.times_seen
-                   : THREAT_SEEN_CAP;
-    score += seen * THREAT_SCORE_SEEN_MULT;
+    // Random MACs rotate per-device, so times_seen counts different physical
+    // devices as one — don't reward persistence for them.
+    if (!d.random_mac) {
+        uint8_t seen = (d.times_seen < THREAT_SEEN_CAP)
+                       ? (uint8_t)d.times_seen
+                       : THREAT_SEEN_CAP;
+        score += seen * THREAT_SCORE_SEEN_MULT;
+    }
 
     if (d.name_or_ssid[0] == '\0')
         score += THREAT_SCORE_HIDDEN;
+
+    if (d.camera_oui)
+        score += THREAT_SCORE_CAMERA_OUI;
 
     return (score > THREAT_SCORE_MAX) ? THREAT_SCORE_MAX : score;
 }
