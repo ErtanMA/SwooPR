@@ -59,12 +59,13 @@ void registry_update(const ScanResult* results, uint8_t count, uint32_t now_ms) 
             d.first_seen_ms = now_ms;
             d.last_seen_ms  = now_ms;
             d.times_seen    = 1;
-            d.random_mac    = mac_is_random(r.mac);
-            d.camera_oui    = !d.random_mac && oui_is_camera(r.mac);
+            d.random_mac = mac_is_random(r.mac);
+            const char* vendor = (!d.random_mac) ? oui_vendor(r.mac) : nullptr;
+            d.camera_oui = (vendor != nullptr);
             s_count++;
             if (d.camera_oui)
                 Serial.printf("[REGISTRY] add %s  %d dBm  [camera:%s]\n",
-                              d.mac, (int)d.rssi, oui_vendor(r.mac));
+                              d.mac, (int)d.rssi, vendor);
             else
                 Serial.printf("[REGISTRY] add %s  %d dBm%s\n",
                               d.mac, (int)d.rssi, d.random_mac ? "  [random]" : "");

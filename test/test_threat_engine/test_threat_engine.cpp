@@ -50,8 +50,9 @@ void test_hidden_ssid_scores_higher() {
 
 void test_score_capped_at_max() {
     DetectedDevice d = make_device(-50, false, 0xFFFF, true);
+    d.camera_oui = true; // strong + seen_cap + hidden + camera_oui exceeds 100
     threat_score_all(&d, 1);
-    TEST_ASSERT_LESS_OR_EQUAL(THREAT_SCORE_MAX, d.threat_score);
+    TEST_ASSERT_EQUAL(THREAT_SCORE_MAX, d.threat_score);
 }
 
 void test_sort_descending() {
