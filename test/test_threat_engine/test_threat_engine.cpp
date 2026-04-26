@@ -10,7 +10,7 @@ static DetectedDevice make_device(int8_t rssi, bool whitelisted,
                                    uint16_t times_seen, bool hidden) {
     DetectedDevice d = {};
     d.protocol      = DeviceProtocol::WIFI;
-    strncpy(d.mac, "AA:BB:CC:DD:EE:FF", sizeof(d.mac));
+    strncpy(d.mac, "A4:BB:CC:DD:EE:FF", sizeof(d.mac));
     d.rssi          = rssi;
     d.smoothed_rssi = rssi;
     d.times_seen    = times_seen;
